@@ -1,4 +1,4 @@
-binary_file=./bin/aur-helper
+binary_file=./tmp/aur-helper
 module_path=./cmd/aur/...
 module_name=$$(sed -n 's/^module //p' go.mod)
 app_version=$$(set -o pipefail; git describe --long --tags 2>/dev/null | sed -r 's/([^-]*-g)/r\1/;s/-/./g' || printf "r%s.%s" "$$(git rev-list --count HEAD)" "$$(git rev-parse --short HEAD)")
@@ -29,10 +29,7 @@ lint: deps-lint
 	govulncheck -show=traces ./...
 	deadcode -test ./...
 
-ifeq ($(DESTDIR),)
-	DESTDIR := ./bin
-endif
-
+DESTDIR = ./bin
 ## install: install the binary file
 install:
 	install -Dsm755 ${binary_file} "$$(realpath $(DESTDIR))/$$(basename ${binary_file})"
