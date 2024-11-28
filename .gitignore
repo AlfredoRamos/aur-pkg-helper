@@ -1,0 +1,11 @@
+tmp/
+build/
+bin/
+.vscode/*
+!.vscode/*.json
+*.env*
+!*.env.example
+*.conf
+*.ini
+*.rej
+*.orig
