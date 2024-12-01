@@ -1,0 +1,7 @@
+{
+	"recommendations": [
+		"golang.Go",
+		"EditorConfig.EditorConfig",
+		"tamasfe.even-better-toml",
+	]
+}

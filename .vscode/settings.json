@@ -1,0 +1,8 @@
+{
+	"editor.linkedEditing": true,
+	"editor.insertSpaces": false,
+	"editor.formatOnSave": true,
+	"go.toolsManagement.autoUpdate": true,
+	"go.diagnostic.vulncheck": "Imports",
+	"go.survey.prompt": false,
+}
