@@ -93,7 +93,7 @@ func SetupGitHooks(repoPath string) error {
 		}
 
 		hookFile := filepath.Clean(filepath.Join(hooksPath, hook.Name()))
-		repoHookFile := filepath.Clean(filepath.Join(repoPath, hook.Name()))
+		repoHookFile := filepath.Clean(filepath.Join(repoPath, ".git", "hooks", strings.ReplaceAll(hook.Name(), filepath.Ext(hook.Name()), "")))
 
 		copyHook := exec.Command("cp", "-af", hookFile, repoHookFile) //#nosec:G204
 		copyHook.Dir = repoPath
