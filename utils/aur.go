@@ -33,10 +33,7 @@ func SetupAurRepositories() error {
 		slog.Info(fmt.Sprintf("Processing package %s", repo.Name()))
 
 		// Ignore non-git repositories
-		if stat, err := os.Stat(filepath.Clean(filepath.Join(repoPath, ".git"))); err != nil {
-			slog.Error(" -> Not a git repository")
-			continue
-		} else if !stat.IsDir() {
+		if stat, err := os.Stat(filepath.Clean(filepath.Join(repoPath, ".git"))); err != nil || !stat.IsDir() {
 			slog.Error(" -> Not a git repository")
 			continue
 		}
