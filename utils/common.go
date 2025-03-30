@@ -11,7 +11,7 @@ import (
 func RootPath() (string, error) {
 	rootPath := filepath.Clean(os.Getenv("AUR_ROOT_PATH"))
 	if len(rootPath) < 1 || rootPath == "." {
-		return "", errors.New("Please set the AUR root path: AUR_ROOT_PATH.")
+		return "", errors.New("please set the AUR root path: AUR_ROOT_PATH")
 	}
 
 	rootPath, err := filepath.Abs(rootPath)
@@ -28,7 +28,7 @@ func RootPath() (string, error) {
 
 		if !stat.IsDir() {
 			slog.Error(fmt.Sprintf("The AUR root path is not a directory: %s", rootPath))
-			return "", errors.New("The AUR root path is not a directory.")
+			return "", errors.New("the AUR root path is not a directory")
 		}
 	}
 

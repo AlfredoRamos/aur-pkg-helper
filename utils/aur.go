@@ -93,14 +93,14 @@ func copySourceHooks() error {
 
 			if !stat.Mode().IsRegular() {
 				slog.Error(fmt.Sprintf("The hook already exists and is not a valid file: %s", destHookFile))
-				errs = append(errs, errors.New("Invalid hook file."))
+				errs = append(errs, errors.New("invalid hook file"))
 			}
 		}
 
 		copyHook := exec.Command("cp", "-af", srcHookFile, destHookFile) //#nosec:G204
 		if err := copyHook.Run(); err != nil {
 			slog.Error(fmt.Sprintf("Could not execute command: %v", err))
-			errs = append(errs, fmt.Errorf("Could not copy source hook '%s'.", hook.Name()))
+			errs = append(errs, fmt.Errorf("could not copy source hook '%s'", hook.Name()))
 		}
 	}
 
@@ -110,7 +110,7 @@ func copySourceHooks() error {
 func HooksPath() (string, error) {
 	hooksPath := filepath.Clean(os.Getenv("GIT_HOOKS_PATH"))
 	if len(hooksPath) < 1 || hooksPath == "." {
-		return "", errors.New("Please set the Git hooks path: GIT_HOOKS_PATH.")
+		return "", errors.New("please set the Git hooks path: GIT_HOOKS_PATH")
 	}
 
 	hooksPath, err := filepath.Abs(hooksPath)
@@ -127,7 +127,7 @@ func HooksPath() (string, error) {
 
 		if !stat.IsDir() {
 			slog.Error(fmt.Sprintf("The Git hooks path is not a directory: %s", hooksPath))
-			return "", errors.New("The Git hooks path is not a directory.")
+			return "", errors.New("the Git hooks path is not a directory")
 		}
 	}
 

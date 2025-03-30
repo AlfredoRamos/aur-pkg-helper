@@ -22,7 +22,7 @@ func SetupGitConfig(repoPath string) error {
 
 		if !stat.IsDir() {
 			slog.Error(fmt.Sprintf("The repository path is not a directory: %s", repoPath))
-			return errors.New("Invalid repository path.")
+			return errors.New("invalid repository path")
 		}
 	}
 
@@ -34,11 +34,11 @@ func SetupGitConfig(repoPath string) error {
 	errs := []error{}
 
 	if !gitConfig.IsValidName() {
-		errs = append(errs, errors.New("Please set the git user name: GIT_USER_NAME."))
+		errs = append(errs, errors.New("please set the git user name: GIT_USER_NAME"))
 	}
 
 	if !gitConfig.IsValidEmail() {
-		errs = append(errs, errors.New("Please set the git user email: GIT_USER_EMAIL."))
+		errs = append(errs, errors.New("please set the git user email: GIT_USER_EMAIL"))
 	}
 
 	if len(errs) > 0 {
@@ -49,14 +49,14 @@ func SetupGitConfig(repoPath string) error {
 	cmdName.Dir = repoPath
 	if err := cmdName.Run(); err != nil {
 		slog.Error(fmt.Sprintf("Could not execute command: %v", err))
-		errs = append(errs, errors.New("Could not set Git user name."))
+		errs = append(errs, errors.New("could not set Git user name"))
 	}
 
 	cmdEmail := exec.Command("git", "config", "--local", "--replace-all", "user.email", gitConfig.Email) //#nosec:G204
 	cmdEmail.Dir = repoPath
 	if err := cmdEmail.Run(); err != nil {
 		slog.Error(fmt.Sprintf("Could not execute command: %v", err))
-		errs = append(errs, errors.New("Could not set Git user email."))
+		errs = append(errs, errors.New("could not set Git user email"))
 	}
 
 	return errors.Join(errs...)
@@ -99,7 +99,7 @@ func SetupGitHooks(repoPath string) error {
 		copyHook.Dir = repoPath
 		if err := copyHook.Run(); err != nil {
 			slog.Error(fmt.Sprintf("Could not execute command: %v", err))
-			errs = append(errs, fmt.Errorf("Could not copy hook '%s'.", hook.Name()))
+			errs = append(errs, fmt.Errorf("could not copy hook '%s'", hook.Name()))
 		}
 	}
 
