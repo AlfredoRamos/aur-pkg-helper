@@ -2,7 +2,6 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -16,18 +15,18 @@ func RootPath() (string, error) {
 
 	rootPath, err := filepath.Abs(rootPath)
 	if err != nil {
-		slog.Error(fmt.Sprintf("Could not get AUR root path: %v", err))
+		slog.Error("Could not get AUR root path", slog.Any("error", err))
 		return "", err
 	}
 
 	if stat, err := os.Stat(rootPath); err != nil || !stat.IsDir() {
 		if err != nil {
-			slog.Error(fmt.Sprintf("Error reading AUR root path: %v", err))
+			slog.Error("Error reading AUR root path", slog.Any("error", err))
 			return "", err
 		}
 
 		if !stat.IsDir() {
-			slog.Error(fmt.Sprintf("The AUR root path is not a directory: %s", rootPath))
+			slog.Error("The AUR root path is not a directory", slog.String("path", rootPath))
 			return "", errors.New("the AUR root path is not a directory")
 		}
 	}

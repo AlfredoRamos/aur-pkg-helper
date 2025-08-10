@@ -4,7 +4,7 @@ Helper for maintaining my packages in the AUR.
 
 # Dependencies
 
-- [Go](https://go.dev/) >= 1.23.3
+- [Go](https://go.dev/) >= 1.24.6
 - [Git](https://git-scm.com/)
 
 # Build
