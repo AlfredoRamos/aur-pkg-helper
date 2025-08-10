@@ -12,13 +12,17 @@ import (
 func SetupAurRepositories() error {
 	rootPath, err := RootPath()
 	if err != nil {
-		slog.Error(fmt.Sprintf("Could not get AUR root path: %v", err))
+		slog.Error("Could not get AUR root path", slog.Any("error", err))
 		return err
 	}
 
 	repos, err := os.ReadDir(rootPath)
 	if err != nil {
-		slog.Error(fmt.Sprintf("Could not get content from AUR root path: %v", err))
+		slog.Error(
+			"Could not get content from AUR root path",
+			slog.String("path", rootPath),
+			slog.Any("error", err),
+		)
 		return err
 	}
 
@@ -30,24 +34,24 @@ func SetupAurRepositories() error {
 			continue
 		}
 
-		slog.Info(fmt.Sprintf("Processing package %s", repo.Name()))
+		slog.Info("Processing", slog.String("repository", repo.Name()))
 
 		// Ignore non-git repositories
 		if stat, err := os.Stat(filepath.Clean(filepath.Join(repoPath, ".git"))); err != nil || !stat.IsDir() {
-			slog.Error(" -> Not a git repository")
+			slog.Error(" -> Not a git repository") //nolint:sloglint
 			continue
 		}
 
 		if err := SetupGitConfig(repoPath); err != nil {
-			slog.Error(fmt.Sprintf(" -> Git configuration [%t]", false))
+			slog.Error(fmt.Sprintf(" -> Git configuration [%t]", false)) //nolint:sloglint
 		} else {
-			slog.Info(fmt.Sprintf(" -> Git configuration [%t]", true))
+			slog.Info(fmt.Sprintf(" -> Git configuration [%t]", true)) //nolint:sloglint
 		}
 
 		if err := SetupGitHooks(repoPath); err != nil {
-			slog.Error(fmt.Sprintf(" -> Git hooks [%t]", false))
+			slog.Error(fmt.Sprintf(" -> Git hooks [%t]", false)) //nolint:sloglint
 		} else {
-			slog.Info(fmt.Sprintf(" -> Git hooks [%t]", true))
+			slog.Info(fmt.Sprintf(" -> Git hooks [%t]", true)) //nolint:sloglint
 		}
 	}
 
@@ -59,13 +63,13 @@ func copySourceHooks() error {
 
 	srcHooks, err := os.ReadDir(srcHooksPath)
 	if err != nil {
-		slog.Error(fmt.Sprintf("Could not get content from source hooks path: %v", err))
+		slog.Error("Could not get content from source hooks path", slog.Any("error", err))
 		return err
 	}
 
 	hooksPath, err := HooksPath()
 	if err != nil {
-		slog.Error(fmt.Sprintf("Could not get hooks path: %v", err))
+		slog.Error("Could not get hooks path", slog.Any("error", err))
 		return err
 	}
 
@@ -87,19 +91,19 @@ func copySourceHooks() error {
 
 		if stat, err := os.Stat(destHookFile); !os.IsNotExist(err) && (err != nil || !stat.Mode().IsRegular()) {
 			if err != nil {
-				slog.Error(fmt.Sprintf("Error reading repository path: %v", err))
+				slog.Error("Error reading repository path", slog.Any("error", err))
 				errs = append(errs, err)
 			}
 
 			if !stat.Mode().IsRegular() {
-				slog.Error(fmt.Sprintf("The hook already exists and is not a valid file: %s", destHookFile))
+				slog.Error("The hook already exists and is not valid hook", slog.String("file", destHookFile))
 				errs = append(errs, errors.New("invalid hook file"))
 			}
 		}
 
 		copyHook := exec.Command("cp", "-af", srcHookFile, destHookFile) //#nosec:G204
 		if err := copyHook.Run(); err != nil {
-			slog.Error(fmt.Sprintf("Could not execute command: %v", err))
+			slog.Error("Could not execute command", slog.Any("error", err))
 			errs = append(errs, fmt.Errorf("could not copy source hook '%s'", hook.Name()))
 		}
 	}
@@ -115,18 +119,18 @@ func HooksPath() (string, error) {
 
 	hooksPath, err := filepath.Abs(hooksPath)
 	if err != nil {
-		slog.Error(fmt.Sprintf("Could not get Git hooks path: %v", err))
+		slog.Error("Could not get Git hooks path", slog.Any("error", err))
 		return "", err
 	}
 
 	if stat, err := os.Stat(hooksPath); err != nil || !stat.IsDir() {
 		if err != nil {
-			slog.Error(fmt.Sprintf("Error reading Git hooks path: %v", err))
+			slog.Error("Error reading Git hooks path", slog.Any("error", err))
 			return "", err
 		}
 
 		if !stat.IsDir() {
-			slog.Error(fmt.Sprintf("The Git hooks path is not a directory: %s", hooksPath))
+			slog.Error("The Git hooks path is not a directory", slog.String("path", hooksPath))
 			return "", errors.New("the Git hooks path is not a directory")
 		}
 	}

@@ -16,12 +16,12 @@ func SetupGitConfig(repoPath string) error {
 	repoPath = filepath.Clean(repoPath)
 	if stat, err := os.Stat(repoPath); err != nil || !stat.IsDir() {
 		if err != nil {
-			slog.Error(fmt.Sprintf("Error reading repository path: %v", err))
+			slog.Error("Error reading repository path", slog.Any("error", err))
 			return err
 		}
 
 		if !stat.IsDir() {
-			slog.Error(fmt.Sprintf("The repository path is not a directory: %s", repoPath))
+			slog.Error("The repository path is not a directory", slog.String("path", repoPath))
 			return errors.New("invalid repository path")
 		}
 	}
@@ -48,14 +48,14 @@ func SetupGitConfig(repoPath string) error {
 	cmdName := exec.Command("git", "config", "--local", "--replace-all", "user.name", gitConfig.Name) //#nosec:G204
 	cmdName.Dir = repoPath
 	if err := cmdName.Run(); err != nil {
-		slog.Error(fmt.Sprintf("Could not execute command: %v", err))
+		slog.Error("Could not execute command", slog.Any("error", err))
 		errs = append(errs, errors.New("could not set Git user name"))
 	}
 
 	cmdEmail := exec.Command("git", "config", "--local", "--replace-all", "user.email", gitConfig.Email) //#nosec:G204
 	cmdEmail.Dir = repoPath
 	if err := cmdEmail.Run(); err != nil {
-		slog.Error(fmt.Sprintf("Could not execute command: %v", err))
+		slog.Error("Could not execute command", slog.Any("error", err))
 		errs = append(errs, errors.New("could not set Git user email"))
 	}
 
@@ -64,18 +64,18 @@ func SetupGitConfig(repoPath string) error {
 
 func SetupGitHooks(repoPath string) error {
 	if err := copySourceHooks(); err != nil {
-		slog.Error(fmt.Sprintf("Could not copy source hooks: %v", err))
+		slog.Error("Could not copy source hooks", slog.Any("error", err))
 	}
 
 	hooksPath, err := HooksPath()
 	if err != nil {
-		slog.Error(fmt.Sprintf("Could not get hooks path: %v", err))
+		slog.Error("Could not get hooks path", slog.Any("error", err))
 		return err
 	}
 
 	hooks, err := os.ReadDir(hooksPath)
 	if err != nil {
-		slog.Error(fmt.Sprintf("Could not get content from Git hooks path: %v", err))
+		slog.Error("Could not get content from Git hooks path", slog.Any("error", err))
 		return err
 	}
 
@@ -98,7 +98,7 @@ func SetupGitHooks(repoPath string) error {
 		copyHook := exec.Command("cp", "-af", hookFile, repoHookFile) //#nosec:G204
 		copyHook.Dir = repoPath
 		if err := copyHook.Run(); err != nil {
-			slog.Error(fmt.Sprintf("Could not execute command: %v", err))
+			slog.Error("Could not execute command", slog.Any("error", err))
 			errs = append(errs, fmt.Errorf("could not copy hook '%s'", hook.Name()))
 		}
 	}
