@@ -5,12 +5,16 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+
+	"alfredoramos.mx/aur-pkg-helper/config"
 )
 
 func RootPath() (string, error) {
-	rootPath := filepath.Clean(os.Getenv("AUR_ROOT_PATH"))
+	config := config.LoadConfig()
+	rootPath := filepath.Clean(config.String("aur.root_path", ""))
+
 	if len(rootPath) < 1 || rootPath == "." {
-		return "", errors.New("please set the AUR root path: AUR_ROOT_PATH")
+		return "", errors.New("please set the AUR root path: aur.root_path")
 	}
 
 	rootPath, err := filepath.Abs(rootPath)

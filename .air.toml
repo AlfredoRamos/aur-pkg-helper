@@ -3,18 +3,18 @@ testdata_dir = "testdata"
 tmp_dir = "tmp"
 
 [build]
-args_bin = []
+cmd = "GOEXPERIMENT=greenteagc GOEXPERIMENT=jsonv2 go build -o ./tmp/aur-helper ./cmd/aur/..."
 bin = "./tmp/aur-helper"
-cmd = "go build -o ./tmp/aur-helper ./cmd/aur/..."
+full_bin = ""
+args_bin = []
 delay = 1000
-exclude_dir = ["assets", "tmp", "vendor", "testdata"]
+exclude_dir = ["assets", "tmp", "vendor", "testdata", "bin"]
 exclude_file = []
 exclude_regex = ["_test.go"]
 exclude_unchanged = false
 follow_symlink = false
-full_bin = ""
 include_dir = []
-include_ext = ["go", "tpl", "tmpl", "env"]
+include_ext = ["go", "tpl", "tmpl"]
 include_file = []
 kill_delay = 500
 log = "error.log"

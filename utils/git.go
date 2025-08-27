@@ -9,11 +9,30 @@ import (
 	"path/filepath"
 	"strings"
 
+	"alfredoramos.mx/aur-pkg-helper/config"
 	"alfredoramos.mx/aur-pkg-helper/types"
 )
 
 func SetupGitConfig(repoPath string) error {
+	config := config.LoadConfig()
+	rootPath, err := RootPath()
+	if err != nil {
+		slog.Error("Could not get AUR root path", slog.Any("error", err))
+		return err
+	}
+
 	repoPath = filepath.Clean(repoPath)
+
+	// Avoid directory traversal attack
+	if !strings.HasPrefix(repoPath, rootPath) {
+		return errors.New("invalid repository path")
+	}
+
+	// Avoid directory traversal attack
+	if rel, err := filepath.Rel(rootPath, repoPath); err != nil || strings.HasPrefix(rel, "..") || filepath.IsAbs(rel) {
+		return errors.New("invalid repository file path: potential directory traversal")
+	}
+
 	if stat, err := os.Stat(repoPath); err != nil || !stat.IsDir() {
 		if err != nil {
 			slog.Error("Error reading repository path", slog.Any("error", err))
@@ -27,18 +46,18 @@ func SetupGitConfig(repoPath string) error {
 	}
 
 	gitConfig := &types.GitConfig{
-		Name:  strings.TrimSpace(os.Getenv("GIT_USER_NAME")),
-		Email: strings.TrimSpace(os.Getenv("GIT_USER_EMAIL")),
+		Name:  strings.TrimSpace(config.String("git.user_name", "")),
+		Email: strings.TrimSpace(config.String("git.user_email", "")),
 	}
 
 	errs := []error{}
 
 	if !gitConfig.IsValidName() {
-		errs = append(errs, errors.New("please set the git user name: GIT_USER_NAME"))
+		errs = append(errs, errors.New("please set the git user name: git.user_name"))
 	}
 
 	if !gitConfig.IsValidEmail() {
-		errs = append(errs, errors.New("please set the git user email: GIT_USER_EMAIL"))
+		errs = append(errs, errors.New("please set the git user email: git.user_email"))
 	}
 
 	if len(errs) > 0 {
@@ -63,6 +82,24 @@ func SetupGitConfig(repoPath string) error {
 }
 
 func SetupGitHooks(repoPath string) error {
+	rootPath, err := RootPath()
+	if err != nil {
+		slog.Error("Could not get AUR root path", slog.Any("error", err))
+		return err
+	}
+
+	repoPath = filepath.Clean(repoPath)
+
+	// Avoid directory traversal attack
+	if !strings.HasPrefix(repoPath, rootPath) {
+		return errors.New("invalid repository path")
+	}
+
+	// Avoid directory traversal attack
+	if rel, err := filepath.Rel(rootPath, repoPath); err != nil || strings.HasPrefix(rel, "..") || filepath.IsAbs(rel) {
+		return errors.New("invalid repository file path: potential directory traversal")
+	}
+
 	if err := copySourceHooks(); err != nil {
 		slog.Error("Could not copy source hooks", slog.Any("error", err))
 	}
@@ -72,6 +109,8 @@ func SetupGitHooks(repoPath string) error {
 		slog.Error("Could not get hooks path", slog.Any("error", err))
 		return err
 	}
+
+	hooksPath = filepath.Clean(hooksPath)
 
 	hooks, err := os.ReadDir(hooksPath)
 	if err != nil {
@@ -93,7 +132,32 @@ func SetupGitHooks(repoPath string) error {
 		}
 
 		hookFile := filepath.Clean(filepath.Join(hooksPath, hook.Name()))
+
+		// Avoid directory traversal attack
+		if !strings.HasPrefix(hookFile, hooksPath) {
+			errs = append(errs, fmt.Errorf("invalid repository hook file path: %s", hook.Name()))
+			continue
+		}
+
+		// Avoid directory traversal attack
+		if rel, err := filepath.Rel(hooksPath, hookFile); err != nil || strings.HasPrefix(rel, "..") || filepath.IsAbs(rel) {
+			errs = append(errs, fmt.Errorf("invalid repository hook file path: potential directory traversal: %s", hook.Name()))
+			continue
+		}
+
 		repoHookFile := filepath.Clean(filepath.Join(repoPath, ".git", "hooks", strings.ReplaceAll(hook.Name(), filepath.Ext(hook.Name()), "")))
+
+		// Avoid directory traversal attack
+		if !strings.HasPrefix(repoHookFile, repoPath) {
+			errs = append(errs, fmt.Errorf("invalid repository hook file path: %s", repoHookFile))
+			continue
+		}
+
+		// Avoid directory traversal attack
+		if rel, err := filepath.Rel(repoPath, repoHookFile); err != nil || strings.HasPrefix(rel, "..") || filepath.IsAbs(rel) {
+			errs = append(errs, fmt.Errorf("invalid repository hook file path: potential directory traversal: %s", repoHookFile))
+			continue
+		}
 
 		copyHook := exec.Command("cp", "-af", hookFile, repoHookFile) //#nosec:G204
 		copyHook.Dir = repoPath

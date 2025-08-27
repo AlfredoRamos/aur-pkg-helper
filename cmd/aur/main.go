@@ -26,8 +26,6 @@ func showVersionInfo() {
 func main() {
 	showVersionInfo()
 
-	app.SetupEnvironment()
-
 	if err := utils.SetupAurRepositories(); err != nil {
 		slog.Error("Could not setup AUR repositories", slog.Any("error", err))
 		os.Exit(1)
