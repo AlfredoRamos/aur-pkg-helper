@@ -9,3 +9,4 @@ bin/
 *.ini
 *.rej
 *.orig
+*.toml

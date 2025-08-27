@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+
+	"alfredoramos.mx/aur-pkg-helper/config"
 )
 
 func SetupAurRepositories() error {
@@ -44,12 +46,14 @@ func SetupAurRepositories() error {
 
 		if err := SetupGitConfig(repoPath); err != nil {
 			slog.Error(fmt.Sprintf(" -> Git configuration [%t]", false)) //nolint:sloglint
+			slog.Error("Could not setup git configuration", slog.Any("error", err))
 		} else {
 			slog.Info(fmt.Sprintf(" -> Git configuration [%t]", true)) //nolint:sloglint
 		}
 
 		if err := SetupGitHooks(repoPath); err != nil {
 			slog.Error(fmt.Sprintf(" -> Git hooks [%t]", false)) //nolint:sloglint
+			slog.Error("Could not setup git hook", slog.Any("error", err))
 		} else {
 			slog.Info(fmt.Sprintf(" -> Git hooks [%t]", true)) //nolint:sloglint
 		}
@@ -112,9 +116,10 @@ func copySourceHooks() error {
 }
 
 func HooksPath() (string, error) {
-	hooksPath := filepath.Clean(os.Getenv("GIT_HOOKS_PATH"))
+	config := config.LoadConfig()
+	hooksPath := filepath.Clean(config.String("git.hooks_path", ""))
 	if len(hooksPath) < 1 || hooksPath == "." {
-		return "", errors.New("please set the Git hooks path: GIT_HOOKS_PATH")
+		return "", errors.New("please set the Git hooks path: git.hooks_path")
 	}
 
 	hooksPath, err := filepath.Abs(hooksPath)

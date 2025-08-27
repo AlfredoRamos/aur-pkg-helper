@@ -12,32 +12,52 @@ linters:
     - asciicheck
     - bidichk
     - bodyclose
+    - canonicalheader
     - contextcheck
     - copyloopvar
     - cyclop
+    - decorder
     - depguard
     - dogsled
+    - dupl
     - dupword
     - durationcheck
+    - errcheck
     - errchkjson
+    - errname
     - errorlint
     - exhaustive
+    - exptostd
     - fatcontext
     - forbidigo
     - gocheckcompilerdirectives
     - gochecknoinits
+    - goconst
     - gosec
+    - govet
+    - ineffassign
+    - intrange
     - makezero
+    - misspell
     - musttag
     - nestif
     - nilerr
+    - nilnesserr
+    - nonamedreturns
+    - nosprintfhostport
     - perfsprint
     - prealloc
+    - predeclared
     - rowserrcheck
-    - sqlclosecheck
-    - unparam
-    - whitespace
     - sloglint
+    - sqlclosecheck
+    - staticcheck
+    - unconvert
+    - unparam
+    - unused
+    - usestdlibvars
+    - wastedassign
+    - whitespace
   settings:
     cyclop:
       max-complexity: 30
@@ -47,7 +67,7 @@ linters:
           allow:
             - $gostd
             - alfredoramos.mx/aur-pkg-helper
-            - github.com/joho/godotenv
+            - github.com/BurntSushi/toml
     errchkjson:
       check-error-free-encoding: false
       report-no-exported: true
@@ -91,6 +111,24 @@ linters:
         - level
         - msg
         - source
+    misspell:
+      locale: US
+    nonamedreturns:
+      report-error-in-defer: true
+    predeclared:
+      qualified-name: true
+    usestdlibvars:
+      http-method: true
+      http-status-code: true
+      time-date-month: true
+      time-weekday: true
+      time-month: true
+      time-layout: true
+      crypto-hash: true
+      default-rpc-path: true
+      sql-isolation-level: true
+      tls-signature-scheme: true
+      constant-kind: true
   exclusions:
     generated: lax
     presets:

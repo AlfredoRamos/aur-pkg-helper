@@ -9,7 +9,7 @@ app_version::=$(shell if [ -n "${git_version}" ]; then echo "${git_version}" | s
 ## help: print this help message
 help:
 	@echo 'Usage:'
-	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' | sed -e 's/^/ /'
+	@sed -En 's/^##\s*//p' ${MAKEFILE_LIST} | column -t -s ':' | sed -e 's/^/\t/'
 
 ## deps: install dependencies
 deps:
@@ -25,10 +25,11 @@ utils:
 
 ## build: build the application for production
 build:
-	CGO_ENABLED=0 go build -ldflags="-s -w -X '${module_name}/internal/app.version=${app_version}'" -trimpath -a -installsuffix cgo -o "${binary_file}" "${module_path}"
+	CGO_ENABLED=0 GOEXPERIMENT=greenteagc GOEXPERIMENT=jsonv2 go build -ldflags="-s -w -X '${module_name}/internal/app.version=${app_version}'" -trimpath -a -installsuffix cgo -o "${binary_file}" "${module_path}"
 
 ## lint: run linters
 lint:
+	go vet ./...
 	golangci-lint run ./...
 	govulncheck -show=traces ./...
 	deadcode -test ./...

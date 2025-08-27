@@ -1,5 +1,5 @@
 module alfredoramos.mx/aur-pkg-helper
 
-go 1.24.6
+go 1.25.0
 
-require github.com/joho/godotenv v1.5.1
+require github.com/BurntSushi/toml v1.5.0
