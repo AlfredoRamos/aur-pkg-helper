@@ -25,7 +25,7 @@ utils:
 
 ## build: build the application for production
 build:
-	CGO_ENABLED=0 GOEXPERIMENT=greenteagc GOEXPERIMENT=jsonv2 go build -ldflags="-s -w -X '${module_name}/internal/app.version=${app_version}'" -trimpath -a -installsuffix cgo -o "${binary_file}" "${module_path}"
+	CGO_ENABLED=0 GOEXPERIMENT=greenteagc,jsonv2 go build -ldflags="-s -w -X '${module_name}/internal/app.version=${app_version}'" -trimpath -a -installsuffix cgo -o "${binary_file}" "${module_path}"
 
 ## lint: run linters
 lint:
@@ -46,4 +46,4 @@ install:
 
 ## clean: cleanup tasks
 clean:
-	rm -fR "$(shell dirname ${binary_file})" tmp
+	rm -fR tmp bin "$(shell dirname ${binary_file})"
